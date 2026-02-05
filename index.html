@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <script src="https://kit.fontawesome.com/a8e6db59bb.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --bg-light: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            /* background: linear-gradient(135deg, #75072c 0%, #764ba2 100%); */
+            background: #e8eef3;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .main-container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .app-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            padding: 2rem 2rem 1.5rem;
+            color: white;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0;
+        }
+
+        .app-title h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
+        }
+
+        .app-title i {
+            font-size: 1.5rem;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .theme-toggle input {
+            cursor: pointer;
+        }
+
+        .theme-toggle label {
+            cursor: pointer;
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .app-body {
+            padding: 2rem;
+        }
+
+        .alert-danger {
+            border-radius: 12px;
+            border: none;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group-text {
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-right: none;
+            color: var(--text-secondary);
+            min-width: 45px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .form-control {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-add-task {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 0.875rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0 auto;
+        }
+
+        .btn-add-task:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-add-task:active {
+            transform: translateY(0);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-tabs .btn {
+            flex: 1;
+            border-radius: 8px;
+            padding: 0.625rem 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tabs .btn-outline-primary {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .filter-tabs .btn-outline-primary:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .filter-tabs .btn-primary {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-list {
+            min-height: 200px;
+        }
+
+        .todo-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .todo-item:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            transform: translateY(-1px);
+        }
+
+        .todo-item.completed {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
+        .todo-item .form-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-grow: 1;
+        }
+
+        .form-check-input {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-top: 0.125rem;
+            cursor: pointer;
+            border: 2px solid #cbd5e1;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .todo-content h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .todo-item.completed h6 {
+            color: var(--text-secondary);
+            text-decoration: line-through;
+        }
+
+        .todo-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .todo-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-info {
+            color: var(--info-color);
+            border: 1.5px solid var(--info-color);
+            background: transparent;
+        }
+
+        .btn-outline-info:hover {
+            background: var(--info-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-danger {
+            color: var(--danger-color);
+            border: 1.5px solid var(--danger-color);
+            background: transparent;
+        }
+
+        .btn-outline-danger:hover {
+            background: var(--danger-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .app-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .task-count {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .task-count span {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-danger:disabled,
+        .btn-outline-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .modal-header h5 {
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-body .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 1.25rem 2rem;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        }
+
+        .dark-mode {
+            --bg-card: #1e293b;
+            --bg-light: #0f172a;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+        }
+
+        .dark-mode .app-card {
+            background: var(--bg-card);
+        }
+
+        .dark-mode .app-body {
+            background: var(--bg-card);
+        }
+
+        .dark-mode .input-group-text {
+            background: #0f172a;
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .dark-mode .form-control {
+            background: #0f172a;
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .dark-mode .form-control:focus {
+            background: #0f172a;
+            color: var(--text-primary);
+        }
+
+        .dark-mode .filter-tabs {
+            background: #0f172a;
+        }
+
+        .dark-mode .filter-tabs .btn-outline-primary {
+            color: var(--text-secondary);
+        }
+
+        .dark-mode .filter-tabs .btn-outline-primary:hover {
+            background: #334155;
+            color: var(--text-primary);
+        }
+
+        .dark-mode .filter-tabs .btn-primary {
+            background: #334155;
+            color: var(--text-primary);
+        }
+
+        .dark-mode .todo-item {
+            background: #0f172a;
+            border-color: var(--border-color);
+        }
+
+        .dark-mode .todo-item.completed {
+            background: #1e293b;
+        }
+
+        .dark-mode .app-footer {
+            background: #0f172a;
+            border-color: var(--border-color);
+        }
+
+        .dark-mode .modal-content {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .dark-mode .modal-body {
+            background: var(--bg-card);
+        }
+
+        .dark-mode .modal-footer {
+            border-color: var(--border-color);
+        }
+
+        .dark-mode .alert-danger {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .app-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .app-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .app-body {
+                padding: 1.5rem 1rem;
+            }
+
+            .theme-toggle {
+                padding: 0.375rem 0.75rem;
+            }
+
+            .theme-toggle label span {
+                display: none;
+            }
+
+            .todo-item {
+                padding: 1rem;
+            }
+
+            .todo-actions {
+                flex-direction: column;
+            }
+
+            .app-footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body onload="fetchTodo(), updateDeleteAll(), loadToggle()">
+
+    <div class="main-container">
+        <div class="app-card">
+        
+            <div class="app-header">
+                <div class="app-title">
+                    <h1>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Task Tracker</span>
+                    </h1>
+                    <div class="theme-toggle">
+                        <input class="form-check-input" type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                        <label class="form-check-label" for="darkModeToggle">
+                            <i id="modeIcon" class="fas fa-moon"></i>
+                            <span id="modeText">Dark</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+           
+            <div class="app-body">
+           
+                <div class="alert alert-danger" role="alert" style="display: none;" id="warningMsg">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Please fill in all fields
+                </div>
+
+           
+                <div class="input-section">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-tasks"></i></span>
+                        <input type="text" class="form-control" id="todo" placeholder="What needs to be done?">
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                        <input type="date" class="form-control" id="todoDate">
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                        <input type="time" class="form-control" id="todoTime">
+                    </div>
+                </div>
+
+                <button onclick="addTodo()" class="btn-add-task">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Task
+                </button>
+
+                
+                <div class="filter-tabs mt-4">
+                    <button id="tab-all" class="btn btn-primary" onclick="filterTodos('all')">
+                        All
+                    </button>
+                    <button id="tab-active" class="btn btn-outline-primary" onclick="filterTodos('active')">
+                        Active
+                    </button>
+                    <button id="tab-completed" class="btn btn-outline-primary" onclick="filterTodos('completed')">
+                        Completed
+                    </button>
+                </div>
+
+               
+                <div id="myScreen" class="todo-list"></div>
+            </div>
+
+       
+            <div class="app-footer">
+                <div class="task-count" id="taskMessage">
+                    You have <span id="pendingCount">0</span> pending task
+                </div>
+                <button class="btn btn-outline-danger" id="clearAll" onclick="deleteAllTodo()">
+                    <i class="fas fa-trash-alt me-2"></i>
+                    <span id="deleteAllText">No tasks</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+  
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i><strong>All tasks deleted!</strong>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editTodoModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>Edit Task
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fas fa-tasks"></i></span>
+                        <input type="text" class="form-control" id="newTodo" placeholder="Task name">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                        <input type="date" class="form-control" id="newTodoDate">
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                        <input type="time" class="form-control" id="newTodoTime">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveChanges()">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteTodoModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Task
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to delete this task? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteTodo()">
+                        <i class="fas fa-trash-alt me-2"></i>Yes, Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete All Modal -->
+    <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Delete Multiple Tasks
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <strong><span id="taskCount">0</span> <span id="filterLabel">tasks</span></strong>?</p>
+                    <p class="text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="executeDelete()">
+                        <i class="fas fa-trash-alt me-2"></i>Yes, Delete All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./todo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
