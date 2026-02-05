@@ -24,7 +24,6 @@ https://saturn217.github.io/Task-Tracker-webApp/
 |------------------------------|------------------------------|
 | ![Empty State](screenshots/empty-state.png) | ![Dark Mode](screenshots/dark-mode.png) |
 
-(Add more screenshots if you have them)
 
 ## Technologies
 
